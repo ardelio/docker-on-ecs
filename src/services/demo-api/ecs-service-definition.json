@@ -1,6 +1,5 @@
 {
     "cluster": "app-ecs-cluster",
-    "serviceName": "demo-api",
     "taskDefinition": "demo-api",
     "desiredCount": 0,
     "deploymentConfiguration": {
