@@ -6,7 +6,7 @@ A demonstration on running a Docker cluster within AWS EC2 Container Service (EC
 
 Run `./bin/cli` for a list of commands.
 
-```bash
+```
 $ ./bin/cli
 
   Usage: cli [options] [command]
