@@ -28,3 +28,34 @@ $ ./bin/cli
     -h, --help     output usage information
     -V, --version  output the version number
 ```
+
+## File Structure
+
+Various commands within the CLI assume a certain file structure. They are outlined below.
+
+### Services
+
+The below example has a service called `demo-api`.
+
+```
+$ tree ./src/services
+./src/services
+└── demo-api
+    └── ecs-service-definition.json
+```
+
+The `ecs-service-definition.json` file is a required file in order to interact with the ECS Service Commands in the CLI. An example file:
+
+```json
+{
+    "cluster": "app-ecs-cluster",
+    "taskDefinition": "demo-api",
+    "desiredCount": 0,
+    "deploymentConfiguration": {
+        "maximumPercent": 200,
+        "minimumHealthyPercent": 100
+    }
+}
+```
+
+You will notice that there is no `"serviceName": "demo-api"`, this is injected by the relevant CLI commands.
