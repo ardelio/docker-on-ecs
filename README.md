@@ -14,6 +14,7 @@ $ ./bin/cli
 
   Commands:
 
+    aws:cf:create [options] <stackName>     Create a stack with the specified name.
     aws:ecs:cluster:list-local              List locally configured clusters
     aws:ecs:cluster:create <clusterName>    Create a cluster with the specified name.
     aws:ecs:cluster:delete <clusterName>    Delete the specified cluster.
@@ -59,3 +60,31 @@ The `ecs-service-definition.json` file is a required file in order to interact w
 ```
 
 You will notice that there is no `"serviceName": "demo-api"`, this is injected by the relevant CLI commands.
+
+### Stacks
+
+The below example has a stack called `ecr`.
+
+```
+$ tree ./src/stacks
+./src/stacks
+└── ecr
+    └── cf.json
+```
+
+The `cf.json` file is a required file in order to interact with the ECS CloudFormation Commands in the CLI. An example file:
+
+```json
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "ECS Container Registry Template",
+  "Resources": {
+    "DockerRegistry": {
+      "Type" : "AWS::ECR::Repository",
+      "Properties" : {
+        "RepositoryName" : "demo-repository"
+      }
+    }
+  }
+}
+```

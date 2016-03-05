@@ -3,6 +3,10 @@
     "app-ecs-cluster"
   ],
   "sdk": {
+    "cf": {
+      "apiVersion": "2010-05-15",
+      "region": "us-east-1"
+    },
     "ecs": {
       "apiVersion": "2014-11-13",
       "region": "us-east-1"

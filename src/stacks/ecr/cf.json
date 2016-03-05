@@ -1,0 +1,12 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "ECS Container Registry Template",
+  "Resources": {
+    "DockerRegistry": {
+      "Type" : "AWS::ECR::Repository",
+      "Properties" : {
+        "RepositoryName" : "demo-repository"
+      }
+    }
+  }
+}
