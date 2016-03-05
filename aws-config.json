@@ -1,0 +1,11 @@
+{
+  "clusters": [
+    "app-ecs-cluster"
+  ],
+  "sdk": {
+    "ecs": {
+      "apiVersion": "2014-11-13",
+      "region": "us-east-1"
+    }
+  }
+}
