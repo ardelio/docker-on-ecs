@@ -9,7 +9,7 @@
         "EnableDnsSupport" : true,
         "EnableDnsHostnames" : true,
         "Tags": [
-          { "Key": "Name", "Value": "Demo" }
+          { "Key": "Name", "Value": "demo" }
         ]
       }
     },
@@ -31,7 +31,7 @@
           "MapPublicIpOnLaunch" : true,
           "VpcId" : { "Ref" : "VPC" },
           "Tags": [
-            { "Key": "Name", "Value": "Demo Public Subnet A" }
+            { "Key": "Name", "Value": "demo-public-subnet-a" }
           ]
        }
     },
@@ -43,7 +43,7 @@
           "MapPublicIpOnLaunch" : true,
           "VpcId" : { "Ref" : "VPC" },
           "Tags": [
-            { "Key": "Name", "Value": "Demo Public Subnet B" }
+            { "Key": "Name", "Value": "demo-public-subnet-b" }
           ]
        }
     },
@@ -53,7 +53,7 @@
       "Properties": {
         "VpcId": { "Ref": "VPC" },
         "Tags": [
-          { "Key": "Name", "Value": "Demo Public" }
+          { "Key": "Name", "Value": "demo-public" }
         ]
       }
     },
@@ -94,7 +94,7 @@
           "MapPublicIpOnLaunch" : false,
           "VpcId" : { "Ref" : "VPC" },
           "Tags": [
-            { "Key": "Name", "Value": "Demo Private Subnet A" }
+            { "Key": "Name", "Value": "demo-private-subnet-a" }
           ]
        }
     },
@@ -107,7 +107,7 @@
           "MapPublicIpOnLaunch" : true,
           "VpcId" : { "Ref" : "VPC" },
           "Tags": [
-            { "Key": "Name", "Value": "Demo Private Subnet B" }
+            { "Key": "Name", "Value": "demo-private-subnet-b" }
           ]
        }
     },
@@ -116,7 +116,7 @@
       "Type": "AWS::EC2::RouteTable",
       "Properties": {
         "VpcId": { "Ref": "VPC" },
-        "Tags": [{ "Key": "Name", "Value": "Demo Private A" }]
+        "Tags": [{ "Key": "Name", "Value": "demo-private-a" }]
       }
     },
 
@@ -124,7 +124,7 @@
       "Type": "AWS::EC2::RouteTable",
       "Properties": {
         "VpcId": { "Ref": "VPC" },
-        "Tags": [{ "Key": "Name", "Value": "Demo Private B" }]
+        "Tags": [{ "Key": "Name", "Value": "demo-private-b" }]
       }
     },
 
@@ -203,7 +203,7 @@
         }],
         "VpcId": { "Ref": "VPC" },
         "Tags": [
-          { "Key": "Name", "Value": "Demo Bastion SG" }
+          { "Key": "Name", "Value": "demo-bastion-sg" }
         ]
       }
     },
@@ -237,9 +237,26 @@
         "MinSize": "1",
         "VPCZoneIdentifier": [{ "Ref": "PublicSubnetA" }, { "Ref": "PublicSubnetB" }],
         "Tags": [
-          { "Key": "Name", "Value": "Demo Bastion", "PropagateAtLaunch": true }
+          { "Key": "Name", "Value": "demo-bastion", "PropagateAtLaunch": true }
         ]
       }
+    }
+  },
+  "Outputs": {
+    "VpcId": {
+      "Value": { "Ref": "VPC" }
+    },
+    "PublicSubnetAId": {
+      "Value": { "Ref": "PublicSubnetA" }
+    },
+    "PublicSubnetBId": {
+      "Value": { "Ref": "PublicSubnetB" }
+    },
+    "PrivateSubnetAId": {
+      "Value": { "Ref": "PrivateSubnetA" }
+    },
+    "PrivateSubnetBId": {
+      "Value": { "Ref": "PrivateSubnetB" }
     }
   }
 }
