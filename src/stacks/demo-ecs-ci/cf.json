@@ -1,0 +1,106 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "EC2 Container Service cluster container instances",
+  "Parameters": {
+    "VpcId" : {
+      "Type" : "AWS::EC2::VPC::Id",
+      "Default" : "vpc-eca18b88",
+      "Description" : "Enter the VPC ID"
+    }
+  },
+
+  "Resources": {
+    "SecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "ECS Cluster container instance security group restricting inbound traffic from VPC only.",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 0,
+            "ToPort": 65535,
+            "CidrIp": "10.0.0.0/16"
+          }
+        ],
+        "SecurityGroupEgress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 0,
+            "ToPort": 65535,
+            "CidrIp": "0.0.0.0/0"
+          }
+        ],
+        "VpcId": { "Ref": "VpcId" },
+        "Tags": [
+          { "Key": "Name", "Value": "demo-ecs-ci-sg" }
+        ]
+      }
+    },
+
+    "InstanceRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": { "Service": "ec2.amazonaws.com" },
+              "Action": [ "sts:AssumeRole" ]
+            }
+          ],
+          "Path": "/",
+          "Policies": [
+            {
+              "PolicyName": "s3ConfigReadAccess",
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": [ "s3:GetObject", "s3:ListBucket" ],
+                    "Resource": [
+                      "arn:aws:s3:::tw-suncorp-config",
+                      "arn:aws:s3:::tw-suncorp-config/*"
+                    ],
+                    "Sid": "TwSuncorpConfigReadAccess"
+                  }
+                ]
+              }
+            },
+            {
+              "PolicyName": "ecsAccess",
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "ecs:CreateCluster",
+                      "ecs:DeregisterContainerInstance",
+                      "ecs:DiscoverPollEndpoint",
+                      "ecs:Poll",
+                      "ecs:RegisterContainerInstance",
+                      "ecs:StartTelemetrySession",
+                      "ecs:Submit"
+                    ],
+                    "Resource": "*",
+                    "Sid": "TwSuncorpEcsAccess"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+
+    "IamInstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Path": "/",
+        "Roles": [{ "Ref": "InstanceRole" }]
+      }
+    }
+  }
+}
