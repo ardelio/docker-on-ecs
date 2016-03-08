@@ -1,6 +1,13 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "Environment setup including VPC, subnets, routing table, etc.",
+  "Parameters": {
+    "InstanceCount": {
+      "Type" : "Number",
+      "Default" : "1",
+      "Description" : "The desired number of Bastion instances. Default provided."
+    },
+  },
   "Resources": {
     "VPC": {
       "Type" : "AWS::EC2::VPC",
@@ -231,7 +238,7 @@
           { "Fn::Select" : [ "0", { "Fn::GetAZs" : { "Ref" : "AWS::Region" } } ] },
           { "Fn::Select" : [ "1", { "Fn::GetAZs" : { "Ref" : "AWS::Region" } } ] }
         ],
-        "DesiredCapacity": "1",
+        "DesiredCapacity": { "Key": "InstanceCount" },
         "LaunchConfigurationName": { "Ref": "BastionLaunchConfiguration" },
         "MaxSize": "2",
         "MinSize": "1",
