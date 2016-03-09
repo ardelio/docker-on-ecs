@@ -1,0 +1,20 @@
+{
+  "containerDefinitions": [
+    {
+      "name": "echo-world",
+      "environment": [],
+      "links": [],
+      "image": "406465642840.dkr.ecr.us-east-1.amazonaws.com/echo-world:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "hostPort": 80
+        }
+      ],
+      "memory": 128,
+      "cpu": 10
+    }
+  ],
+  "family": "demo"
+}
