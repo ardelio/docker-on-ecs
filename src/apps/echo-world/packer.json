@@ -1,0 +1,46 @@
+{
+  "variables": {
+    "version": "latest"
+  },
+  "builders": [
+    {
+      "type": "docker",
+      "image": "node:5-slim",
+      "commit": true
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": ".",
+      "destination": "/app"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "echo Installing NPM packages",
+        "cd /app",
+        "npm install"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "echo Removing redundant files",
+        "cd /app",
+        "rm package.json",
+        "rm packer.json"
+      ]
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "docker-tag",
+        "repository": "406465642840.dkr.ecr.us-east-1.amazonaws.com/echo-world",
+        "tag": "{{user `version`}}"
+      },
+      "docker-push"
+    ]
+  ]
+}

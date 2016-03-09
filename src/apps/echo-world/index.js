@@ -8,7 +8,6 @@ app.get('/', function (req, res) {
   res.send('Echo World API!');
 });
 
-
 app.get('/world', function (req, res) {
   res.send(JSON.stringify(process.env, null, 2));
 });
