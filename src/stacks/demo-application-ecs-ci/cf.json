@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "EC2 Container Service cluster container instances",
+  "Description": "ECS Demo Application Cluster container instances",
   "Parameters": {
     "VpcId" : {
       "Type" : "AWS::EC2::VPC::Id",
@@ -106,7 +106,7 @@
                       "/*"
                     ]]}
                   ],
-                  "Sid": "TwSuncorpConfigReadAccess"
+                  "Sid": "TwSuncorpS3ConfigBucketReadAccess"
                 }
               ]
             }
@@ -129,6 +129,25 @@
                   ],
                   "Resource": "*",
                   "Sid": "TwSuncorpEcsAccess"
+                }
+              ]
+            }
+          },
+          {
+            "PolicyName": "ecrAccess",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ecr:BatchCheckLayerAvailability",
+                    "ecr:BatchGetImage",
+                    "ecr:GetDownloadUrlForLayer",
+                    "ecr:GetAuthorizationToken"
+                  ],
+                  "Resource": "*",
+                  "Sid": "TwSuncorpEcrAccess"
                 }
               ]
             }

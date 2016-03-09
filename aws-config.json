@@ -1,6 +1,6 @@
 {
   "clusters": [
-    "app-ecs-cluster"
+    "demo-application-cluster"
   ],
   "sdk": {
     "cf": {
