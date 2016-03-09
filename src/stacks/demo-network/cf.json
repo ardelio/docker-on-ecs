@@ -7,6 +7,16 @@
       "Default" : "1",
       "Description" : "The desired number of Bastion instances. Default provided."
     },
+    "InstanceCountMax": {
+      "Type" : "Number",
+      "Default" : "2",
+      "Description" : "The maximum number of Bastion instances. Default provided."
+    },
+    "InstanceCountMin": {
+      "Type" : "Number",
+      "Default" : "1",
+      "Description" : "The minimum number of Bastion instances. Default provided."
+    }
   },
   "Resources": {
     "VPC": {
@@ -238,10 +248,10 @@
           { "Fn::Select" : [ "0", { "Fn::GetAZs" : { "Ref" : "AWS::Region" } } ] },
           { "Fn::Select" : [ "1", { "Fn::GetAZs" : { "Ref" : "AWS::Region" } } ] }
         ],
-        "DesiredCapacity": { "Key": "InstanceCount" },
+        "DesiredCapacity": { "Ref": "InstanceCount" },
         "LaunchConfigurationName": { "Ref": "BastionLaunchConfiguration" },
-        "MaxSize": "2",
-        "MinSize": "1",
+        "MaxSize": { "Ref": "InstanceCountMax" },
+        "MinSize": { "Ref": "InstanceCountMin" },
         "VPCZoneIdentifier": [{ "Ref": "PublicSubnetA" }, { "Ref": "PublicSubnetB" }],
         "Tags": [
           { "Key": "Name", "Value": "demo-bastion", "PropagateAtLaunch": true }
