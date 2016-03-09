@@ -5,7 +5,42 @@
     "VpcId" : {
       "Type" : "AWS::EC2::VPC::Id",
       "Default" : "vpc-eca18b88",
-      "Description" : "Enter the VPC ID"
+      "Description" : "Enter the VPC ID. Default provided."
+    },
+    "ImageId": {
+      "Type" : "AWS::EC2::Image::Id",
+      "Default" : "ami-33b48a59",
+      "Description" : "Enter the ECS Optimized Image Id. Default provided."
+    },
+    "InstanceType": {
+      "Type" : "String",
+      "Default" : "m3.medium",
+      "Description" : "Enter the Instance Type for each ECS container instance. Default provided."
+    },
+    "InstanceCount": {
+      "Type" : "Number",
+      "Default" : "2",
+      "Description" : "The desired number of ECS container instances. Default provided."
+    },
+    "InstanceCountMax": {
+      "Type" : "Number",
+      "Default" : "4",
+      "Description" : "The maximum number of ECS container instances. Default provided."
+    },
+    "InstanceCountMin": {
+      "Type" : "Number",
+      "Default" : "2",
+      "Description" : "The minimum number of ECS container instances. Default provided."
+    },
+    "ConfigBucket": {
+      "Type" : "String",
+      "Default" : "tw-suncorp-config",
+      "Description" : "Enter the S3 config bucket name. Default provided."
+    },
+    "PrivateSubnets": {
+      "Type" : "CommaDelimitedList",
+      "Default" : "subnet-297fdc03, subnet-906bf9e6",
+      "Description" : "Enter the Private Subnets of the VPC. Default provided."
     }
   },
 
@@ -48,50 +83,57 @@
               "Principal": { "Service": "ec2.amazonaws.com" },
               "Action": [ "sts:AssumeRole" ]
             }
-          ],
-          "Path": "/",
-          "Policies": [
-            {
-              "PolicyName": "s3ConfigReadAccess",
-              "PolicyDocument": {
-                "Version": "2012-10-17",
-                "Statement": [
-                  {
-                    "Effect": "Allow",
-                    "Action": [ "s3:GetObject", "s3:ListBucket" ],
-                    "Resource": [
-                      "arn:aws:s3:::tw-suncorp-config",
-                      "arn:aws:s3:::tw-suncorp-config/*"
-                    ],
-                    "Sid": "TwSuncorpConfigReadAccess"
-                  }
-                ]
-              }
-            },
-            {
-              "PolicyName": "ecsAccess",
-              "PolicyDocument": {
-                "Version": "2012-10-17",
-                "Statement": [
-                  {
-                    "Effect": "Allow",
-                    "Action": [
-                      "ecs:CreateCluster",
-                      "ecs:DeregisterContainerInstance",
-                      "ecs:DiscoverPollEndpoint",
-                      "ecs:Poll",
-                      "ecs:RegisterContainerInstance",
-                      "ecs:StartTelemetrySession",
-                      "ecs:Submit"
-                    ],
-                    "Resource": "*",
-                    "Sid": "TwSuncorpEcsAccess"
-                  }
-                ]
-              }
-            }
           ]
-        }
+        },
+        "Path": "/",
+        "Policies": [
+          {
+            "PolicyName": "s3ConfigReadAccess",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [ "s3:GetObject", "s3:ListBucket" ],
+                  "Resource": [
+                    { "Fn::Join": ["", [
+                      "arn:aws:s3:::",
+                      { "Ref": "ConfigBucket" }
+                    ]]},
+                    { "Fn::Join": ["", [
+                      "arn:aws:s3:::",
+                      { "Ref": "ConfigBucket" },
+                      "/*"
+                    ]]}
+                  ],
+                  "Sid": "TwSuncorpConfigReadAccess"
+                }
+              ]
+            }
+          },
+          {
+            "PolicyName": "ecsAccess",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ecs:CreateCluster",
+                    "ecs:DeregisterContainerInstance",
+                    "ecs:DiscoverPollEndpoint",
+                    "ecs:Poll",
+                    "ecs:RegisterContainerInstance",
+                    "ecs:StartTelemetrySession",
+                    "ecs:Submit"
+                  ],
+                  "Resource": "*",
+                  "Sid": "TwSuncorpEcsAccess"
+                }
+              ]
+            }
+          }
+        ]
       }
     },
 
@@ -100,6 +142,86 @@
       "Properties": {
         "Path": "/",
         "Roles": [{ "Ref": "InstanceRole" }]
+      }
+    },
+
+    "LaunchConfiguration": {
+      "Type": "AWS::AutoScaling::LaunchConfiguration",
+      "Properties": {
+        "ImageId": { "Ref": "ImageId" },
+        "InstanceType": { "Ref": "InstanceType" },
+        "KeyName": "tw-dev",
+        "SecurityGroups": [{ "Ref": "SecurityGroup" }],
+        "AssociatePublicIpAddress": false,
+        "IamInstanceProfile": { "Ref": "IamInstanceProfile" },
+        "UserData": { "Fn::Base64": { "Fn::Join": ["", [
+          "#!/bin/bash\n",
+          "# cfn-init not installed in ECS Optimized AMI\n",
+          "yum install -y aws-cfn-bootstrap\n",
+          "# cfn-init: 1\n",
+          "{\n",
+          "  /opt/aws/bin/cfn-init -v --stack ", {"Ref": "AWS::StackId" }, " --resource LaunchConfiguration --configsets setup --region ", { "Ref" : "AWS::Region" }, " && \n",
+          "  /opt/aws/bin/cfn-signal -e 0 --stack ", { "Ref": "AWS::StackId" }, " --resource AutoScalingGroup --region ", { "Ref": "AWS::Region" }, ";\n",
+          "} || /opt/aws/bin/cfn-signal -e 1 --stack ", { "Ref": "AWS::StackId" }, " --resource AutoScalingGroup --region ", { "Ref": "AWS::Region" }, ";\n"
+        ]] }}
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Authentication": {
+          "S3AccessCreds": {
+            "Type": "s3",
+            "RoleName": { "Ref": "InstanceRole" },
+            "Buckets": { "Ref": "ConfigBucket" }
+          }
+        },
+
+        "AWS::CloudFormation::Init" : {
+          "configSets": { "setup" : [ "ecsConfig" ] },
+          "ecsConfig": {
+            "packages": { "yum": { "aws-cli": []}},
+            "commands": {
+              "aMakeEcsDirectory": {
+                "command": "mkdir -p /etc/ecs"
+              },
+              "bPullEcsConfig": {
+                "command": { "Fn::Join": ["", [
+                  "aws s3 cp s3://", { "Ref": "ConfigBucket" }, "/ecs-ci/ecs.config /etc/ecs/"
+              ]] }}
+            }
+          }
+        }
+      }
+    },
+
+    "AutoScalingGroup": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "AvailabilityZones": [
+          { "Fn::Select" : [ "0", { "Fn::GetAZs" : { "Ref" : "AWS::Region" } } ] },
+          { "Fn::Select" : [ "1", { "Fn::GetAZs" : { "Ref" : "AWS::Region" } } ] }
+        ],
+        "DesiredCapacity": { "Ref": "InstanceCount" },
+        "LaunchConfigurationName": { "Ref": "LaunchConfiguration" },
+        "MaxSize": { "Ref": "InstanceCountMax" },
+        "MinSize": { "Ref": "InstanceCountMin" },
+        "Tags": [{
+          "Key": "Name",
+          "Value": "demo-ecs-ci",
+          "PropagateAtLaunch": true
+        }],
+        "VPCZoneIdentifier": { "Ref": "PrivateSubnets" }
+      },
+      "UpdatePolicy": {
+        "AutoScalingRollingUpdate": {
+          "MinInstancesInService": "1",
+          "PauseTime": "PT5M",
+          "WaitOnResourceSignals": true
+        }
+      },
+      "CreationPolicy": {
+        "ResourceSignal": {
+          "Count": 2,
+          "Timeout": "PT5M"
+        }
       }
     }
   }
