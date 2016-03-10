@@ -1,6 +1,5 @@
 {
     "cluster": "demo-application-cluster",
-    "taskDefinition": "demo",
     "desiredCount": 0,
     "deploymentConfiguration": {
         "maximumPercent": 200,
