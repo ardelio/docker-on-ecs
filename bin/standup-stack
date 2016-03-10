@@ -1,0 +1,24 @@
+#!/bin/bash
+
+function successfully_stoodup() {
+  MSG=$1;
+
+  { echo $MSG | grep 'No updates are to be performed.' 1> /dev/null \
+      && printf '\t✅  Already stoodup\n\n'; } \
+    || {  printf '\t❌  Error standing up. Error:\n'; printf "\n${MSG}\n\n"; };
+}
+
+function standup() {
+  STACK=$1;
+  INSTANCE_COUNT=$2;
+  INSTANCE_COUNT_MIN=$3;
+
+  { echo "stack: ${STACK}, desired: ${INSTANCE_COUNT}, min: ${INSTANCE_COUNT_MIN}" \
+      && printf "\t🕒  Standing up.\n" \
+      && STANDUP_OUTPUT=$(AWS_PROFILE=tw-suncorp ./bin/cli aws:cf:update -p InstanceCount=${INSTANCE_COUNT} -p InstanceCountMin=${INSTANCE_COUNT_MIN} $STACK 2>&1 > /dev/null) \
+      && printf '\t✅  Successfully stood up\n\n'; } \
+    || successfully_stoodup "$STANDUP_OUTPUT";
+}
+
+standup 'demo-network' 1 1;
+standup 'demo-application-ecs-ci' 2 2;
