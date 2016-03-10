@@ -1,6 +1,6 @@
 {
     "cluster": "demo-application-cluster",
-    "desiredCount": 0,
+    "desiredCount": 1,
     "deploymentConfiguration": {
         "maximumPercent": 200,
         "minimumHealthyPercent": 100
