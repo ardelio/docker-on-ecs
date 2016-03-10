@@ -1,0 +1,8 @@
+#!/bin/bash
+
+echo 'Shutting down CloudFormation Stack [demo-network]'
+AWS_PROFILE=tw-suncorp ./bin/cli aws:cf:update -p InstanceCount=0 -p InstanceCountMin=0 demo-network &&
+  echo '✔ Successfully shutdown'
+echo 'Shutting down CloudFormation Stack [demo-application-ecs-ci]'
+AWS_PROFILE=tw-suncorp ./bin/cli aws:cf:update -p InstanceCount=0 -p InstanceCountMin=0 demo-application-ecs-ci &&
+  echo '✔ Successfully shutdown'
