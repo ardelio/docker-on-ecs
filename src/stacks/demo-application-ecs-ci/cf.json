@@ -119,13 +119,17 @@
                 {
                   "Effect": "Allow",
                   "Action": [
+                    "ecr:BatchCheckLayerAvailability",
+                    "ecr:BatchGetImage",
+                    "ecr:GetAuthorizationToken",
+                    "ecr:GetDownloadUrlForLayer",
                     "ecs:CreateCluster",
                     "ecs:DeregisterContainerInstance",
                     "ecs:DiscoverPollEndpoint",
                     "ecs:Poll",
                     "ecs:RegisterContainerInstance",
                     "ecs:StartTelemetrySession",
-                    "ecs:Submit"
+                    "ecs:Submit*"
                   ],
                   "Resource": "*",
                   "Sid": "TwSuncorpEcsAccess"
