@@ -15,6 +15,5 @@
       "memory": 128,
       "cpu": 10
     }
-  ],
-  "family": "demo"
+  ]
 }
