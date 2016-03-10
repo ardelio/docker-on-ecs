@@ -1,8 +1,22 @@
 #!/bin/bash
 
-echo 'Shutting down CloudFormation Stack [demo-network]'
-AWS_PROFILE=tw-suncorp ./bin/cli aws:cf:update -p InstanceCount=0 -p InstanceCountMin=0 demo-network &&
-  echo '✔ Successfully shutdown'
-echo 'Shutting down CloudFormation Stack [demo-application-ecs-ci]'
-AWS_PROFILE=tw-suncorp ./bin/cli aws:cf:update -p InstanceCount=0 -p InstanceCountMin=0 demo-application-ecs-ci &&
-  echo '✔ Successfully shutdown'
+function successfully_shutdown() {
+  MSG=$1;
+
+  { echo $MSG | grep 'No updates are to be performed.' 1> /dev/null \
+      && printf '\t✅  Already shutdown\n\n'; } \
+    || {  printf '\t❌  Error shutting down. Error:\n'; printf "\n${MSG}\n\n"; };
+}
+
+function shutdown() {
+  STACK=$1;
+
+  { echo "CloudFormation Stack: ${STACK}" \
+    && printf "\t🕒  Shutting down\n" \
+    && SHUTDOWN_OUTPUT=$(AWS_PROFILE=tw-suncorp ./bin/cli aws:cf:update -p InstanceCount=0 -p InstanceCountMin=0 $STACK 2>&1 > /dev/null) \
+    && printf '\t✅  Successfully shutdown\n\n'; } \
+    || successfully_shutdown "$SHUTDOWN_OUTPUT";
+}
+
+shutdown 'demo-network';
+shutdown 'demo-application-ecs-ci';
