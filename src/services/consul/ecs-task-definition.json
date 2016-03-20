@@ -1,0 +1,25 @@
+{
+  "containerDefinitions": [
+    {
+      "name": "consul",
+      "environment": [],
+      "links": [],
+      "image": "progrium/consul:latest",
+      "essential": true,
+      "command": [
+        "-server" ,
+        "-bootstrap",
+        "-ui-dir",
+        "ui"
+      ],
+      "portMappings": [
+        {
+          "containerPort": 8500,
+          "hostPort": 8500
+        }
+      ],
+      "memory": 256,
+      "cpu": 128
+    }
+  ]
+}

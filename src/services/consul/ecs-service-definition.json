@@ -1,0 +1,14 @@
+{
+    "cluster": "demo-application-cluster",
+    "desiredCount": 1,
+    "deploymentConfiguration": {
+        "maximumPercent": 200,
+        "minimumHealthyPercent": 100
+    },
+    "loadBalancers": [{
+      "loadBalancerName": "demo-consul-elb",
+      "containerName": "consul",
+      "containerPort": 8500
+    }],
+    "role": "ecsServiceRole"
+}

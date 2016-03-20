@@ -1,0 +1,69 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "ECS Demo Consul Loadbalancer",
+  "Parameters": {
+    "VpcId" : {
+      "Type" : "AWS::EC2::VPC::Id",
+      "Default" : "vpc-eca18b88",
+      "Description" : "Enter the VPC ID. Default provided."
+    },
+    "PublicSubnets": {
+      "Type" : "CommaDelimitedList",
+      "Default" : "subnet-287fdc02, subnet-916bf9e7",
+      "Description" : "Enter the Public Subnets of the VPC. Default provided."
+    }
+  },
+
+  "Resources": {
+    "SecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "ECS Cluster Consul ELB. Publicly accesible on port 8500.",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 8500,
+            "ToPort": 8500,
+            "CidrIp": "0.0.0.0/0"
+          }
+        ],
+        "SecurityGroupEgress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 0,
+            "ToPort": 65535,
+            "CidrIp": "0.0.0.0/0"
+          }
+        ],
+        "VpcId": { "Ref": "VpcId" },
+        "Tags": [
+          { "Key": "Name", "Value": "demo-consul-sg" }
+        ]
+      }
+    },
+
+    "LoadBalancer": {
+      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+      "Properties": {
+        "CrossZone" : true,
+        "HealthCheck" : {
+          "Target": "HTTP:8500/v1/catalog/nodes",
+          "HealthyThreshold": 3,
+          "UnhealthyThreshold": 5,
+          "Interval": 30,
+          "Timeout": 5
+        },
+        "LoadBalancerName" : "demo-consul-elb",
+        "Listeners" : [{
+           "InstancePort" : "8500",
+           "InstanceProtocol" : "HTTP",
+           "LoadBalancerPort" : "8500",
+           "Protocol" : "HTTP"
+        }],
+        "Scheme" : "internet-facing",
+        "SecurityGroups" : [ { "Ref": "SecurityGroup" } ],
+        "Subnets" : { "Ref": "PublicSubnets" }
+      }
+    }
+  }
+}
