@@ -1,6 +1,9 @@
 {
   "variables": {
-    "version": "latest"
+    "app_name": "echo-world",
+    "version": "latest",
+    "aws_account_id": "111111111111",
+    "aws_region": "us-east-1"
   },
   "builders": [
     {
@@ -37,7 +40,7 @@
     [
       {
         "type": "docker-tag",
-        "repository": "406465642840.dkr.ecr.us-east-1.amazonaws.com/echo-world",
+        "repository": "{{user `aws_account_id`}}.dkr.ecr.{{user `aws_region`}}.amazonaws.com/{{user `app_name`}}",
         "tag": "{{user `version`}}"
       },
       "docker-push"
