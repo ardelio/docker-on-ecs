@@ -7,8 +7,9 @@ A demonstration on running a Docker cluster within AWS EC2 Container Service (EC
 ## Contents
 - [Usage](#usage)
 - [File Structure](#file-structure)
-- [Services](#services)
-- [Stacks](#stacks)
+ - [Apps](#apps)
+ - [Services](#services)
+ - [Stacks](#stacks)
 
 ## Usage
 
@@ -50,6 +51,11 @@ Options:
 ## File Structure
 
 Various commands within the CLI assume a certain file structure. They are outlined below.
+
+### Apps
+
+The apps directory is a placeholder for your applications. There is a hello world example with a packer file for building a flat Docker Image and publishing to your ECR 
+
 
 ### Services
 
