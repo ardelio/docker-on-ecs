@@ -15,7 +15,7 @@ function standup() {
 
   { echo "stack: ${STACK}, desired: ${INSTANCE_COUNT}, min: ${INSTANCE_COUNT_MIN}" \
       && printf "\t🕒  Standing up.\n" \
-      && STANDUP_OUTPUT=$(AWS_PROFILE=tw-suncorp ./bin/cli aws:cf:update -p InstanceCount=${INSTANCE_COUNT} -p InstanceCountMin=${INSTANCE_COUNT_MIN} $STACK 2>&1 > /dev/null) \
+      && STANDUP_OUTPUT=$(./bin/cli aws:cf:update -p InstanceCount=${INSTANCE_COUNT} -p InstanceCountMin=${INSTANCE_COUNT_MIN} $STACK 2>&1 > /dev/null) \
       && printf '\t✅  Successfully stood up\n\n'; } \
     || successfully_stoodup "$STANDUP_OUTPUT";
 }

@@ -13,7 +13,7 @@ function shutdown() {
 
   { echo "stack: ${STACK}, desired: 0, min: 0" \
     && printf "\t🕒  Shutting down\n" \
-    && SHUTDOWN_OUTPUT=$(AWS_PROFILE=tw-suncorp ./bin/cli aws:cf:update -p InstanceCount=0 -p InstanceCountMin=0 $STACK 2>&1 > /dev/null) \
+    && SHUTDOWN_OUTPUT=$(./bin/cli aws:cf:update -p InstanceCount=0 -p InstanceCountMin=0 $STACK 2>&1 > /dev/null) \
     && printf '\t✅  Successfully shutdown\n\n'; } \
     || successfully_shutdown "$SHUTDOWN_OUTPUT";
 }
